@@ -55,6 +55,7 @@ import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitError
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationSubmitErrorDialog
 import hedvig.resources.Res
 import hedvig.resources.TERMINATE_CONTRACT_TERMINATING_PROGRESS
+import hedvig.resources.TERMINATION_FLOW_CONFIRMATION
 import hedvig.resources.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY
 import hedvig.resources.TERMINATION_FLOW_SUMMARY_SUBTITLE
 import hedvig.resources.TERMINATION_FLOW_WITHDRAWAL_BUTTON
@@ -152,7 +153,15 @@ private fun TerminationWithdrawalContent(
   val areYouSureSheetState = rememberHedvigBottomSheetState<Unit>()
   AreYouSureSheet(
     state = areYouSureSheetState,
-    description = stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY, formattedEndDate),
+    description = when (uiState.action) {
+      is TerminationAction.TerminateWithDate -> {
+        stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY, formattedEndDate)
+      }
+
+      is TerminationAction.DeleteInsurance -> {
+        stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION)
+      }
+    },
     confirmCancellation = onConfirm,
     confirmButtonText = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON),
     notificationMessage = uiState.notificationMessage,

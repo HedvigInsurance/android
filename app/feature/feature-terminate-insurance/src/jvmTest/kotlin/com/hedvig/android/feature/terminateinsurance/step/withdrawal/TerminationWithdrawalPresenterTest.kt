@@ -169,6 +169,22 @@ class TerminationWithdrawalPresenterTest {
   }
 
   @Test
+  fun `a contract that had not started yet replaces the flow with success without an end date`() = runTest {
+    val repository = repository(
+      withdrawalData = withdrawalData.copy(action = TerminationAction.DeleteInsurance(emptyList())).right(),
+      withdrawResult = WithdrawalResult.Withdrawn.right(),
+    )
+    val backstack = flowBackstack()
+    presenter(repository, backstack).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      sendEvent(TerminationWithdrawalEvent.Submit)
+      testScheduler.advanceUntilIdle()
+      assertThat(backstack.entries).containsExactly(StartingTestKey, WithdrawalSuccessKey(endDate = null))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `a user error is shown and the member stays on the screen`() = runTest {
     val repository = repository(withdrawResult = WithdrawalResult.UserError("nope").right())
     val backstack = flowBackstack()

@@ -136,7 +136,11 @@ internal class TerminationWithdrawalPresenter(
                   }
 
                   WithdrawalResult.Withdrawn -> {
-                    backstack.replaceTerminationFlow(WithdrawalSuccessKey(content.endDate))
+                    val endDate = when (content.action) {
+                      is TerminationAction.TerminateWithDate -> content.endDate
+                      is TerminationAction.DeleteInsurance -> null
+                    }
+                    backstack.replaceTerminationFlow(WithdrawalSuccessKey(endDate))
                   }
                 }
               },
