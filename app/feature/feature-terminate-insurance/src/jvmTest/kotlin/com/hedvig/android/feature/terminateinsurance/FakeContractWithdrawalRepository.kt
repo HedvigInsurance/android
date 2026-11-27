@@ -7,7 +7,7 @@ import com.hedvig.android.feature.terminateinsurance.data.ContractWithdrawalRepo
 import com.hedvig.android.feature.terminateinsurance.data.WithdrawalResult
 
 internal class FakeContractWithdrawalRepository(
-  private val withdrawalData: Either<ErrorMessage, ContractWithdrawalData> = Either.Left(ErrorMessage()),
+  var withdrawalData: Either<ErrorMessage, ContractWithdrawalData> = Either.Left(ErrorMessage()),
   private val withdrawResult: Either<ErrorMessage, WithdrawalResult> = Either.Left(ErrorMessage()),
 ) : ContractWithdrawalRepository {
   val withdrawalRequests = mutableListOf<String>()

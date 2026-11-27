@@ -1150,6 +1150,7 @@
   <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE">Vill du ändra e-post?</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO">Bekräftelsen skickas till</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Ja, ångra försäkringen</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_EMAIL_LABEL">Bekräftelse skickas till</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Du har ångrat försäkringen</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Ångra försäkringen</string>
   <string name="TERMINATION_KEEP_INSURANCE_BUTTON">Behåll försäkring</string>
