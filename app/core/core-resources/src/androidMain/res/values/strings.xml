@@ -22,6 +22,7 @@
     <item quantity="other">Submitted values</item>
   </plurals>
   <string name="A11Y_VIEW_DETAILS">View details</string>
+  <string name="A11Y_YEAR_IN_REVIEW_ICON_DESCRIPTION">Year in review</string>
   <string name="ADDON_ADDED_COVERAGE">Added</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>

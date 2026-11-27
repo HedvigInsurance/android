@@ -34,6 +34,7 @@ import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.OngoingShopSession
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
+import com.hedvig.android.feature.home.yearinreview.data.IsYearInReviewAvailableUseCase
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
 import com.hedvig.android.memberquickactions.QuickAction
@@ -119,6 +120,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -152,6 +154,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -183,6 +186,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -269,6 +273,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
@@ -319,6 +324,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       clock,
     )
     val addonOnlyCrossSells = CrossSellSheetData(null, listOf(), testAddon)
@@ -367,6 +373,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -427,6 +434,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -457,6 +465,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -501,6 +510,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -557,6 +567,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     val firstVet = FirstVetSection(
@@ -620,6 +631,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     val crossSell = CrossSell(
@@ -692,6 +704,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -747,6 +760,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -802,6 +816,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     val otherCrossSell = CrossSell(
@@ -844,6 +859,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -877,6 +893,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -909,6 +926,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -937,6 +955,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       eventTrackingClient,
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     val offerUrl =
@@ -974,6 +993,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       eventTrackingClient,
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     val offerUrl =
@@ -1028,6 +1048,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -1058,6 +1079,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(memberType.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -1085,6 +1107,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(ErrorMessage().left()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -1153,6 +1176,7 @@ internal class HomePresenterTest {
       FakeDismissedShopSessionsStorage(),
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -1192,6 +1216,7 @@ internal class HomePresenterTest {
       dismissedShopSessionsStorage,
       FakeGetMemberTypeUseCase(MemberType.STANDARD_MEMBER.right()),
       FakeEventTrackingClient(),
+      FakeIsYearInReviewAvailableUseCase(),
       TestClock(),
     )
 
@@ -1263,4 +1288,10 @@ private class TestDeleteClaimIntentDraftUseCase : DeleteClaimIntentDraftUseCase 
     deletedIdsTurbine.add(id)
     return result
   }
+}
+
+private class FakeIsYearInReviewAvailableUseCase(
+  private val isAvailable: Boolean = false,
+) : IsYearInReviewAvailableUseCase {
+  override fun invoke(): Flow<Boolean> = flowOf(isAvailable)
 }

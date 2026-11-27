@@ -15,5 +15,6 @@ internal class HomeDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<HedvigNavKey, *>> =
-    uriDeepLinkMatchers(container.home, HomeKey.serializer())
+    uriDeepLinkMatchers(container.home, HomeKey.serializer()) +
+      uriDeepLinkMatchers(container.yearInReview, YearInReviewKey.serializer())
 }

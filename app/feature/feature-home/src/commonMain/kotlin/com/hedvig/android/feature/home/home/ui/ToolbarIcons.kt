@@ -30,12 +30,14 @@ import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.ChatNoCircle
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.Star
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVetNoCircle
 import com.hedvig.android.design.system.hedvig.liquidGlass
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE
 import hedvig.resources.Res
+import hedvig.resources.YEAR_IN_REVIEW_TITLE
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.insurance_tab_cross_sells_title
 import org.jetbrains.compose.resources.stringResource
@@ -106,12 +108,26 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
   }
 }
 
+@Composable
+fun ToolbarYearInReviewIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  ToolbarIconButton(onClick = onClick, modifier = modifier) {
+    Icon(
+      imageVector = HedvigIcons.Star,
+      contentDescription = stringResource(Res.string.YEAR_IN_REVIEW_TITLE),
+      tint = HedvigTheme.colorScheme.signalAmberElement,
+      modifier = Modifier.size(toolbarGlyphSize),
+    )
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewToolbarChatIcon() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       Row {
+        ToolbarYearInReviewIcon(onClick = {})
+        Spacer(modifier = Modifier.width(8.dp))
         ToolbarFirstVetIcon(onClick = {})
         Spacer(modifier = Modifier.width(8.dp))
         ToolbarCrossSellsIcon({})

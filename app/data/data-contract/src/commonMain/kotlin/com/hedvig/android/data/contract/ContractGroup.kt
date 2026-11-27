@@ -68,12 +68,28 @@ fun ContractGroup.pillowResource(): DrawableResource = when (this) {
  * this module, so callers pick a pillow through this enum instead.
  */
 enum class PillowType {
+  HOME,
+  RENTAL,
+  VILLA,
+  HOMEOWNER,
   CAR,
+  DOG,
+  CAT,
+  ACCIDENT,
+  STUDENT,
   VACATION,
 }
 
 fun PillowType.pillowResource(): DrawableResource = when (this) {
+  PillowType.HOME -> Res.drawable.home
+  PillowType.RENTAL -> Res.drawable.rental
+  PillowType.VILLA -> Res.drawable.villa
+  PillowType.HOMEOWNER -> Res.drawable.homeowner
   PillowType.CAR -> Res.drawable.car
+  PillowType.DOG -> Res.drawable.dog
+  PillowType.CAT -> Res.drawable.cat
+  PillowType.ACCIDENT -> Res.drawable.accident
+  PillowType.STUDENT -> Res.drawable.student
   PillowType.VACATION -> Res.drawable.vacation
 }
 

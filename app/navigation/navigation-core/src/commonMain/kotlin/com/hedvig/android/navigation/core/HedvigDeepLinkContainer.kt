@@ -8,6 +8,7 @@ import dev.zacsweers.metro.SingleIn
 
 interface HedvigDeepLinkContainer {
   val home: List<String> // Home destination, the start destination of the app
+  val yearInReview: List<String> // The year in review stories, opened from home
   val helpCenter: List<String> // The help center root screen
   val helpCenterCommonTopic: List<String> // A common topic inside the help center
   val helpCenterQuestion: List<String> // A specific question inside the help center
@@ -115,6 +116,10 @@ internal class HedvigDeepLinkContainerImpl(
   // Sample url: https://hedvigdevelop.page.link/help-center/question?id=2
   override val helpCenterQuestion: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/help-center/question?id={id}"
+  }
+
+  override val yearInReview: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/year-in-review"
   }
 
   override val puppyGuide: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->

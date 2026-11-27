@@ -12,6 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.model.MarkdownAlertColors
@@ -23,6 +24,10 @@ import com.mikepenz.markdown.model.markdownAlertColors
 import com.mikepenz.markdown.model.markdownAlertPadding
 import com.mikepenz.markdown.model.markdownAnnotator
 import com.mikepenz.markdown.model.markdownAnnotatorConfig
+import org.intellij.markdown.MarkdownElementTypes
+import org.intellij.markdown.MarkdownTokenTypes
+import org.intellij.markdown.ast.ASTNode
+import org.intellij.markdown.ast.getTextInNode
 
 /**
  * Renders Markdown content with Hedvig theming.
@@ -34,6 +39,10 @@ import com.mikepenz.markdown.model.markdownAnnotatorConfig
  * is rendered. CommonMark leaves this to the renderer: by default the library collapses it to a
  * space, but some content (e.g. chat messages mirroring iOS) is authored expecting the newline to
  * be preserved. Set this to true to render soft line breaks as actual line breaks.
+ *
+ * [strongStyle], when provided, is how `**bold**` text is drawn, in place of the bold weight. It must
+ * set every attribute that should differ from the surrounding text, since nested emphasis inside it is
+ * drawn as plain text.
  */
 @Composable
 fun HedvigMarkdownText(
@@ -41,6 +50,7 @@ fun HedvigMarkdownText(
   modifier: Modifier = Modifier,
   style: TextStyle? = null,
   eolAsNewLine: Boolean = false,
+  strongStyle: SpanStyle? = null,
 ) {
   val colors = HedvigTheme.colorScheme
   val typography = HedvigTheme.typography
@@ -97,7 +107,10 @@ fun HedvigMarkdownText(
     modifier = modifier,
     colors = markdownColors,
     typography = markdownTypography,
-    annotator = markdownAnnotator(config = markdownAnnotatorConfig(eolAsNewLine = eolAsNewLine)),
+    annotator = markdownAnnotator(
+      config = markdownAnnotatorConfig(eolAsNewLine = eolAsNewLine),
+      annotate = strongStyle?.let { strongAnnotator(it) },
+    ),
     padding = object : MarkdownPadding {
       override val block = 0.dp
       override val blockQuote = PaddingValues(0.dp)
@@ -154,3 +167,17 @@ inline fun <R : Any> AnnotatedString.Builder.withHedvigLink(url: String, block: 
     block()
   }
 }
+
+private fun strongAnnotator(style: SpanStyle): AnnotatedString.Builder.(String, ASTNode) -> Boolean =
+  { content, child ->
+    if (child.type == MarkdownElementTypes.STRONG) {
+      withStyle(style) {
+        child.children
+          .filter { it.type != MarkdownTokenTypes.EMPH }
+          .forEach { append(it.getTextInNode(content)) }
+      }
+      true
+    } else {
+      false
+    }
+  }

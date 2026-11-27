@@ -29,6 +29,7 @@ import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.OngoingShopSession
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
+import com.hedvig.android.feature.home.yearinreview.data.IsYearInReviewAvailableUseCase
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.memberquickactions.GetMemberQuickActionsUseCase
@@ -59,6 +60,7 @@ internal class HomePresenter(
   private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
   private val getMemberTypeUseCase: GetMemberTypeUseCase,
   private val eventTrackingClient: EventTrackingClient,
+  private val isYearInReviewAvailableUseCase: IsYearInReviewAvailableUseCase,
   private val clock: Clock,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
@@ -70,6 +72,7 @@ internal class HomePresenter(
     var crossSellToolTipShownEpochDay by remember { mutableStateOf<Long?>(null) }
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
+    val isYearInReviewAvailable by remember { isYearInReviewAvailableUseCase.invoke() }.collectAsState(false)
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
@@ -194,6 +197,7 @@ internal class HomePresenter(
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
+          yearInReviewAction = if (isYearInReviewAvailable) HomeTopBarAction.YearInReviewAction else null,
           addonBannerInfos = successData.addonBannerInfos,
           isProduction = isProduction,
           discoverCrossSells = successData.discoverCrossSells,
@@ -243,6 +247,7 @@ internal sealed interface HomeUiState {
     val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
+    val yearInReviewAction: HomeTopBarAction.YearInReviewAction? = null,
     val addonBannerInfos: List<AddonBannerInfo>,
     val isProduction: Boolean,
     val isHelpCenterEnabled: Boolean,
@@ -368,6 +373,8 @@ sealed interface HomeText {
 
 sealed interface HomeTopBarAction {
   data object ChatAction : HomeTopBarAction
+
+  data object YearInReviewAction : HomeTopBarAction
 
   data class FirstVetAction(
     val sections: List<FirstVetSection>,

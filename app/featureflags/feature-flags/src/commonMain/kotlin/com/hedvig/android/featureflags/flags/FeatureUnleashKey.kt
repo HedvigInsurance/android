@@ -11,4 +11,5 @@ internal val Feature.unleashKey: String
     Feature.ENABLE_NEW_CONVERSATION_FROM_INBOX -> "enable_new_conversation_from_inbox"
     Feature.HIDE_CANCEL_INSURANCE_FROM_HOME_SCREEN -> "hide_cancel_insurance_from_home_screen"
     Feature.UPDATE_NECESSARY -> "update_necessary"
+    Feature.YEAR_IN_REVIEW -> "year_in_review"
   }
