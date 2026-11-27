@@ -4,6 +4,8 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.cache.normalized.FetchPolicy
 import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.auth.AuthStatus
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
@@ -14,8 +16,12 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import octopus.MissedPaymentQuery
@@ -36,8 +42,21 @@ internal data class PaymentsNotificationBadgeData(
 @Inject
 internal class GetPaymentsNotificationBadgeUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val authTokenService: AuthTokenService,
 ) : GetPaymentsNotificationBadgeUseCase {
   override fun invoke(): Flow<PaymentsNotificationBadgeData?> {
+    // MissedPaymentQuery is a member query, so nothing is sent while logged out. Following the auth status also keeps
+    // the flow open, so a member logging in later in the same process gets the badge without resubscribing.
+    return authTokenService.authStatus
+      .filterNotNull()
+      .map { it is AuthStatus.LoggedIn }
+      .distinctUntilChanged()
+      .flatMapLatest { isLoggedIn ->
+        if (isLoggedIn) badgeDataWhileLoggedIn() else flowOf(null)
+      }
+  }
+
+  private fun badgeDataWhileLoggedIn(): Flow<PaymentsNotificationBadgeData?> {
     return flow {
       while (currentCoroutineContext().isActive) {
         // Nothing else fetches these fields, so a cached answer would never be refreshed. The cache
