@@ -11,11 +11,15 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -72,6 +76,15 @@ internal fun TerminationWithdrawalDestination(
   closeTerminationFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  var hasResumedOnce by rememberSaveable { mutableStateOf(false) }
+  LifecycleResumeEffect(Unit) {
+    if (hasResumedOnce) {
+      viewModel.emit(TerminationWithdrawalEvent.Refresh)
+    } else {
+      hasResumedOnce = true
+    }
+    onPauseOrDispose {}
+  }
   TerminationWithdrawalScreen(
     uiState = uiState,
     onRetry = { viewModel.emit(TerminationWithdrawalEvent.Retry) },

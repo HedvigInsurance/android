@@ -1150,6 +1150,7 @@
   <string name="TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE">Do you want to change email?</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO">The confirmation is sent to</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON">Yes, withdraw insurance</string>
+  <string name="TERMINATION_FLOW_WITHDRAWAL_EMAIL_LABEL">Confirmation will be sent to</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE">Your insurance is cancelled</string>
   <string name="TERMINATION_FLOW_WITHDRAWAL_TITLE">Withdraw insurance</string>
   <string name="TERMINATION_KEEP_INSURANCE_BUTTON">Keep insurance</string>

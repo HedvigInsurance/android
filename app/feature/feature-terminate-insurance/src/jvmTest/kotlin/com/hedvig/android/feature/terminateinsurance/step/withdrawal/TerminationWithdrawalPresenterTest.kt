@@ -92,6 +92,39 @@ class TerminationWithdrawalPresenterTest {
   }
 
   @Test
+  fun `a refresh picks up an email changed elsewhere without showing loading`() = runTest {
+    val repository = repository()
+    presenter(repository, flowBackstack()).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      expectMostRecentItem()
+      repository.withdrawalData = withdrawalData.copy(confirmationEmail = "new@example.com").right()
+      sendEvent(TerminationWithdrawalEvent.Refresh)
+      testScheduler.advanceUntilIdle()
+      assertThat(repository.withdrawalRequests).containsExactly("contractId", "contractId")
+      assertThat(expectMostRecentItem()).isInstanceOf<TerminationWithdrawalUiState.Content>().given {
+        assertThat(it.confirmationEmail).isEqualTo("new@example.com")
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a failed refresh keeps the content already shown`() = runTest {
+    val repository = repository()
+    presenter(repository, flowBackstack()).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      val loaded = expectMostRecentItem()
+      repository.withdrawalData = ErrorMessage().left()
+      sendEvent(TerminationWithdrawalEvent.Refresh)
+      testScheduler.advanceUntilIdle()
+      assertThat(repository.withdrawalRequests).containsExactly("contractId", "contractId")
+      assertThat(loaded).isInstanceOf<TerminationWithdrawalUiState.Content>()
+      assertThat(expectMostRecentItem()).isEqualTo(loaded)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `a withdrawn contract replaces the flow with success carrying its end date`() = runTest {
     val repository = repository(withdrawResult = WithdrawalResult.Withdrawn.right())
     val backstack = flowBackstack()

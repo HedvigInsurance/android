@@ -55,6 +55,7 @@ internal class TerminationWithdrawalPresenter(
     lastState: TerminationWithdrawalUiState,
   ): TerminationWithdrawalUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
+    var refreshIteration by remember { mutableIntStateOf(0) }
     var uiState by remember {
       mutableStateOf(
         if (lastState is TerminationWithdrawalUiState.Content) lastState.copy(isSubmitting = false) else lastState,
@@ -80,10 +81,29 @@ internal class TerminationWithdrawalPresenter(
       )
     }
 
+    LaunchedEffect(refreshIteration) {
+      if (refreshIteration == 0) return@LaunchedEffect
+      if (uiState !is TerminationWithdrawalUiState.Content) return@LaunchedEffect
+      contractWithdrawalRepository.getContractWithdrawal(insuranceInfo.contractId).onRight { withdrawal ->
+        val content = uiState as? TerminationWithdrawalUiState.Content ?: return@onRight
+        if (content.isSubmitting) return@onRight
+        uiState = content.copy(
+          statusText = withdrawal.statusText,
+          action = withdrawal.action,
+          endDate = withdrawalEndDate(withdrawal.action, clock),
+          confirmationEmail = withdrawal.confirmationEmail,
+        )
+      }
+    }
+
     CollectEvents { event ->
       when (event) {
         TerminationWithdrawalEvent.Retry -> {
           loadIteration++
+        }
+
+        TerminationWithdrawalEvent.Refresh -> {
+          refreshIteration++
         }
 
         TerminationWithdrawalEvent.DismissSubmitError -> {
@@ -126,6 +146,8 @@ internal class TerminationWithdrawalPresenter(
 
 internal sealed interface TerminationWithdrawalEvent {
   data object Retry : TerminationWithdrawalEvent
+
+  data object Refresh : TerminationWithdrawalEvent
 
   data object Submit : TerminationWithdrawalEvent
 

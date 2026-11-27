@@ -25,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.icon.Lock
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER
 import hedvig.resources.TERMINATION_FLOW_DATE_FIELD_TEXT
+import hedvig.resources.TERMINATION_FLOW_WITHDRAWAL_EMAIL_LABEL
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
@@ -79,8 +80,7 @@ internal fun TerminationInfoCardConfirmationEmail(
   modifier: Modifier = Modifier,
 ) {
   TerminationInfoCardField(
-    // TODO: Add "Confirmation will be sent to" / "Bekräftelsen skickas till" to Lokalise
-    label = "Confirmation will be sent to",
+    label = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_EMAIL_LABEL),
     value = email,
     isPlaceholder = false,
     onClick = onClick,
