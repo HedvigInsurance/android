@@ -53,13 +53,15 @@ internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: 
 }
 
 @Composable
-internal fun WithdrawalSuccessDestination(endDate: LocalDate, onDone: () -> Unit) {
+internal fun WithdrawalSuccessDestination(endDate: LocalDate?, onDone: () -> Unit) {
   SuccessScreen(
     title = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE),
-    description = stringResource(
-      Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY,
-      rememberHedvigDateTimeFormatter().format(endDate),
-    ),
+    description = endDate?.let {
+      stringResource(
+        Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY,
+        rememberHedvigDateTimeFormatter().format(endDate),
+      )
+    } ?: stringResource(Res.string.TERMINATE_CONTRACT_TERMINATION_COMPLETE),
     onDone = onDone,
   )
 }
@@ -133,10 +135,14 @@ private fun PreviewTerminationSuccessScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewWithdrawalSuccessScreen() {
+private fun PreviewWithdrawalSuccessScreen(
+  @PreviewParameter(
+    com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
+  ) withEndDate: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      WithdrawalSuccessDestination(endDate = LocalDate(2026, 11, 25), onDone = {})
+      WithdrawalSuccessDestination(endDate = if (withEndDate) LocalDate(2026, 11, 25) else null, onDone = {})
     }
   }
 }

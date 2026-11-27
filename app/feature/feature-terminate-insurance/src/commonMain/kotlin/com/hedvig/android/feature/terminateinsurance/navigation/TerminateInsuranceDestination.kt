@@ -129,7 +129,8 @@ internal data class TerminationSuccessKey(
 
 @Serializable
 internal data class WithdrawalSuccessKey(
-  val endDate: LocalDate,
+  /** Null when the contract had not started yet and was deleted. */
+  val endDate: LocalDate?,
 ) : HedvigNavKey
 
 @Serializable

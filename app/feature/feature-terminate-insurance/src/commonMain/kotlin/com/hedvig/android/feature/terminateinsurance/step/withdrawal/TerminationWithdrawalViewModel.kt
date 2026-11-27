@@ -5,11 +5,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.terminateinsurance.data.ContractWithdrawalRepository
+import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.WithdrawalResult
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
@@ -32,6 +34,7 @@ import kotlinx.datetime.toLocalDateTime
 internal class TerminationWithdrawalViewModel @AssistedInject constructor(
   @Assisted insuranceInfo: TerminationGraphParameters,
   contractWithdrawalRepository: ContractWithdrawalRepository,
+  getTerminationNotificationUseCase: GetTerminationNotificationUseCase,
   clock: Clock,
   backstack: Backstack,
 ) : MoleculeViewModel<TerminationWithdrawalEvent, TerminationWithdrawalUiState>(
@@ -39,6 +42,7 @@ internal class TerminationWithdrawalViewModel @AssistedInject constructor(
     presenter = TerminationWithdrawalPresenter(
       insuranceInfo = insuranceInfo,
       contractWithdrawalRepository = contractWithdrawalRepository,
+      getTerminationNotificationUseCase = getTerminationNotificationUseCase,
       clock = clock,
       backstack = backstack,
     ),
@@ -47,6 +51,7 @@ internal class TerminationWithdrawalViewModel @AssistedInject constructor(
 internal class TerminationWithdrawalPresenter(
   private val insuranceInfo: TerminationGraphParameters,
   private val contractWithdrawalRepository: ContractWithdrawalRepository,
+  private val getTerminationNotificationUseCase: GetTerminationNotificationUseCase,
   private val clock: Clock,
   private val backstack: Backstack,
 ) : MoleculePresenter<TerminationWithdrawalEvent, TerminationWithdrawalUiState> {
@@ -74,6 +79,7 @@ internal class TerminationWithdrawalPresenter(
             action = withdrawal.action,
             endDate = withdrawalEndDate(withdrawal.action, clock),
             confirmationEmail = withdrawal.confirmationEmail,
+            notificationMessage = null,
             submitError = null,
             isSubmitting = false,
           )
@@ -130,7 +136,11 @@ internal class TerminationWithdrawalPresenter(
                   }
 
                   WithdrawalResult.Withdrawn -> {
-                    backstack.replaceTerminationFlow(WithdrawalSuccessKey(content.endDate))
+                    val endDate = when (content.action) {
+                      is TerminationAction.TerminateWithDate -> content.endDate
+                      is TerminationAction.DeleteInsurance -> null
+                    }
+                    backstack.replaceTerminationFlow(WithdrawalSuccessKey(endDate))
                   }
                 }
               },
@@ -140,7 +150,21 @@ internal class TerminationWithdrawalPresenter(
       }
     }
 
-    return uiState
+    val endDate = (uiState as? TerminationWithdrawalUiState.Content)?.endDate
+    val notificationMessage by produceState(
+      initialValue = (lastState as? TerminationWithdrawalUiState.Content)?.notificationMessage,
+      key1 = endDate,
+    ) {
+      if (endDate == null) return@produceState
+      getTerminationNotificationUseCase.invoke(insuranceInfo.contractId, endDate).collect {
+        value = it.getOrNull()
+      }
+    }
+
+    return when (val state = uiState) {
+      is TerminationWithdrawalUiState.Content -> state.copy(notificationMessage = notificationMessage)
+      else -> state
+    }
   }
 }
 
@@ -165,6 +189,7 @@ internal sealed interface TerminationWithdrawalUiState {
     val action: TerminationAction,
     val endDate: LocalDate,
     val confirmationEmail: String,
+    val notificationMessage: String?,
     val submitError: TerminationSubmitError?,
     val isSubmitting: Boolean,
   ) : TerminationWithdrawalUiState

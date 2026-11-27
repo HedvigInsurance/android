@@ -12,6 +12,7 @@ import assertk.assertions.isNull
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.feature.terminateinsurance.FakeContractWithdrawalRepository
+import com.hedvig.android.feature.terminateinsurance.FakeGetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.TestBackstack
 import com.hedvig.android.feature.terminateinsurance.data.ContractWithdrawalData
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
@@ -49,8 +50,11 @@ class TerminationWithdrawalPresenterTest {
 
   private fun flowBackstack() = TestBackstack(mutableListOf(StartingTestKey, TerminationWithdrawalKey(commonParams)))
 
-  private fun presenter(repository: FakeContractWithdrawalRepository, backstack: TestBackstack) =
-    TerminationWithdrawalPresenter(commonParams, repository, fixedClockAt(today), backstack)
+  private fun presenter(
+    repository: FakeContractWithdrawalRepository,
+    backstack: TestBackstack,
+    notificationUseCase: FakeGetTerminationNotificationUseCase = FakeGetTerminationNotificationUseCase(),
+  ) = TerminationWithdrawalPresenter(commonParams, repository, notificationUseCase, fixedClockAt(today), backstack)
 
   private fun repository(
     withdrawalData: Either<ErrorMessage, ContractWithdrawalData> = this.withdrawalData.right(),
@@ -70,6 +74,7 @@ class TerminationWithdrawalPresenterTest {
           action = endsToday,
           endDate = today,
           confirmationEmail = "member@example.com",
+          notificationMessage = null,
           submitError = null,
           isSubmitting = false,
         ),
@@ -87,6 +92,31 @@ class TerminationWithdrawalPresenterTest {
       sendEvent(TerminationWithdrawalEvent.Retry)
       testScheduler.advanceUntilIdle()
       assertThat(repository.withdrawalRequests).containsExactly("contractId", "contractId")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `the termination notification for the end date is shown with the content`() = runTest {
+    val notificationUseCase = FakeGetTerminationNotificationUseCase("Bundle discount ends".right())
+    presenter(repository(), flowBackstack(), notificationUseCase).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      assertThat(notificationUseCase.requests).containsExactly("contractId" to today)
+      assertThat(expectMostRecentItem()).isInstanceOf<TerminationWithdrawalUiState.Content>().given {
+        assertThat(it.notificationMessage).isEqualTo("Bundle discount ends")
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a failed termination notification still shows the content without it`() = runTest {
+    val notificationUseCase = FakeGetTerminationNotificationUseCase(ErrorMessage().left())
+    presenter(repository(), flowBackstack(), notificationUseCase).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isInstanceOf<TerminationWithdrawalUiState.Content>().given {
+        assertThat(it.notificationMessage).isNull()
+      }
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -134,6 +164,22 @@ class TerminationWithdrawalPresenterTest {
       testScheduler.advanceUntilIdle()
       assertThat(repository.withdrawRequests).containsExactly("contractId")
       assertThat(backstack.entries).containsExactly(StartingTestKey, WithdrawalSuccessKey(today))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `a contract that had not started yet replaces the flow with success without an end date`() = runTest {
+    val repository = repository(
+      withdrawalData = withdrawalData.copy(action = TerminationAction.DeleteInsurance(emptyList())).right(),
+      withdrawResult = WithdrawalResult.Withdrawn.right(),
+    )
+    val backstack = flowBackstack()
+    presenter(repository, backstack).test(TerminationWithdrawalUiState.Loading) {
+      testScheduler.advanceUntilIdle()
+      sendEvent(TerminationWithdrawalEvent.Submit)
+      testScheduler.advanceUntilIdle()
+      assertThat(backstack.entries).containsExactly(StartingTestKey, WithdrawalSuccessKey(endDate = null))
       cancelAndIgnoreRemainingEvents()
     }
   }
