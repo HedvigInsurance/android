@@ -11,6 +11,7 @@ import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
+import com.hedvig.android.feature.terminateinsurance.FakeGetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.TestBackstack
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationResult
@@ -205,13 +206,4 @@ private class FakeTerminateInsuranceRepository(
     surveyOptionId: String,
     comment: String?,
   ): Either<ErrorMessage, TerminationResult> = deleteResult
-}
-
-private class FakeGetTerminationNotificationUseCase :
-  com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase(
-    apolloClient = com.apollographql.apollo.ApolloClient.Builder().serverUrl("https://unused").build(),
-  ) {
-  override fun invoke(contractId: String, terminationDate: LocalDate): Flow<Either<ErrorMessage, String?>> {
-    return flowOf(null.right())
-  }
 }

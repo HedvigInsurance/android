@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
 import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -208,10 +209,12 @@ internal fun AreYouSureSheet(
   description: String,
   confirmCancellation: () -> Unit,
   confirmButtonText: String = stringResource(Res.string.TERMINATION_FLOW_CONFIRM_BUTTON),
+  notificationMessage: String? = null,
 ) {
   HedvigBottomSheet(state) {
     AreYouSureSheetContent(
       description = description,
+      notificationMessage = notificationMessage,
       confirmButtonText = confirmButtonText,
       confirmCancellation = {
         state.dismiss()
@@ -225,6 +228,7 @@ internal fun AreYouSureSheet(
 @Composable
 private fun AreYouSureSheetContent(
   description: String,
+  notificationMessage: String?,
   confirmButtonText: String,
   confirmCancellation: () -> Unit,
   dismissSheet: () -> Unit,
@@ -237,6 +241,14 @@ private fun AreYouSureSheetContent(
       description = description,
       modifier = Modifier.fillMaxWidth(),
     )
+    if (notificationMessage != null) {
+      Spacer(Modifier.height(16.dp))
+      HedvigNotificationCard(
+        message = notificationMessage,
+        priority = NotificationDefaults.NotificationPriority.Info,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = confirmButtonText,
@@ -381,11 +393,18 @@ private fun previewOverviewUiState(
 
 @HedvigPreview
 @Composable
-private fun PreviewAreYouSureSheetContent() {
+private fun PreviewAreYouSureSheetContent(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withNotification: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AreYouSureSheetContent(
         description = "Your insurance will end on 9 Aug 2024.",
+        notificationMessage = if (withNotification) {
+          "Your insurance will be deactivated when you no longer have two insurances with us"
+        } else {
+          null
+        },
         confirmButtonText = "Yes, cancel",
         confirmCancellation = {},
         dismissSheet = {},

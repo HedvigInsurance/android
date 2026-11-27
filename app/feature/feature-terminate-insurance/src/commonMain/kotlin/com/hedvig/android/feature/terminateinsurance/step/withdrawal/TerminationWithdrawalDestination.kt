@@ -155,6 +155,7 @@ private fun TerminationWithdrawalContent(
     description = stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY, formattedEndDate),
     confirmCancellation = onConfirm,
     confirmButtonText = stringResource(Res.string.TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON),
+    notificationMessage = uiState.notificationMessage,
   )
   val changeEmailSheetState = rememberHedvigBottomSheetState<Unit>()
   ChangeEmailBottomSheet(
@@ -193,7 +194,7 @@ private fun TerminationWithdrawalContent(
     Spacer(Modifier.height(4.dp))
     HedvigNotificationCard(
       message = uiState.statusText,
-      priority = NotificationDefaults.NotificationPriority.Info,
+      priority = NotificationDefaults.NotificationPriority.InfoInline,
       modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -316,6 +317,7 @@ private fun previewWithdrawalUiState(action: TerminationAction, submitError: Ter
     action = action,
     endDate = LocalDate(2026, 11, 25),
     confirmationEmail = "member@example.com",
+    notificationMessage = null,
     submitError = submitError,
     isSubmitting = false,
   )
