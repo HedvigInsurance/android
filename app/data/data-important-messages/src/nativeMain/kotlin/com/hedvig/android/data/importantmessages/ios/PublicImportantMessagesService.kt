@@ -7,8 +7,8 @@ import com.hedvig.android.data.importantmessages.GetPublicImportantMessagesUseCa
 import com.hedvig.android.data.importantmessages.PublicImportantMessage
 import com.hedvig.android.iosdata.bridge.IosGraphHolder
 import com.hedvig.android.iosdata.bridge.component
-import com.hedvig.android.iosdata.bridge.iosRead
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
+import com.hedvig.android.iosdata.bridge.iosReadOrThrow
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesRefined
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Inject
 import kotlin.experimental.ExperimentalObjCEnum
@@ -18,12 +18,12 @@ import kotlin.native.ObjCEnum
 
 /** The important messages the iOS app shows before login. */
 @Inject
-class PublicImportantMessagesReads internal constructor(
+class PublicImportantMessagesService internal constructor(
   private val getPublicImportantMessages: GetPublicImportantMessagesUseCase,
 ) {
   /** The active messages in the app's language, in the order the backend sends them, which is most severe first. */
-  @NativeCoroutines
-  suspend fun messages(): List<PublicImportantMessageItem> = iosRead {
+  @NativeCoroutinesRefined
+  suspend fun messages(): List<PublicImportantMessageItem> = iosReadOrThrow {
     getPublicImportantMessages.invoke().bind().map { it.toItem() }
   }
 }
@@ -58,9 +58,9 @@ private fun PublicImportantMessage.toItem() = PublicImportantMessageItem(
 
 @HiddenFromObjC
 @ContributesTo(AppScope::class)
-interface PublicImportantMessagesReadsComponent {
-  val publicImportantMessagesReads: PublicImportantMessagesReads
+interface PublicImportantMessagesServiceComponent {
+  val publicImportantMessagesService: PublicImportantMessagesService
 }
 
-fun IosGraphHolder.publicImportantMessagesReads(): PublicImportantMessagesReads =
-  component<PublicImportantMessagesReadsComponent>().publicImportantMessagesReads
+fun IosGraphHolder.publicImportantMessagesService(): PublicImportantMessagesService =
+  component<PublicImportantMessagesServiceComponent>().publicImportantMessagesService

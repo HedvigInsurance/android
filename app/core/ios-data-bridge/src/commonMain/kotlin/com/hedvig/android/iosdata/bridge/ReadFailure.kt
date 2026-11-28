@@ -9,6 +9,7 @@ import com.apollographql.apollo.exception.ApolloNetworkException
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.WrapsApolloOperationError
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.MemberFacingErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlin.coroutines.cancellation.CancellationException
@@ -17,8 +18,16 @@ import kotlin.experimental.ExperimentalObjCRefinement
 import kotlin.native.HiddenFromObjC
 import kotlin.native.ObjCEnum
 
-/** Why a read the iOS app awaits failed. Swift finds it in the `KotlinException` entry of the error it catches. */
-class ReadFailure(val kind: ReadFailureKind, cause: Throwable? = null) : Exception(kind.name, cause)
+/**
+ * Why a read the iOS app awaits failed. Swift finds it in the `KotlinException` entry of the error it catches.
+ * [memberFacingMessage] is the text the backend wrote for the member, set when the read raised a
+ * [MemberFacingErrorMessage], and the iOS app shows it as the error's description.
+ */
+class ReadFailure(
+  val kind: ReadFailureKind,
+  cause: Throwable? = null,
+  val memberFacingMessage: String? = null,
+) : Exception(kind.name, cause)
 
 @ObjCEnum
 enum class ReadFailureKind {
@@ -35,10 +44,11 @@ enum class ReadFailureKind {
 /**
  * Runs a read for the iOS app. A failure [block] raises (an [ApolloOperationError], an [ErrorMessage], or anything
  * else) or throws is thrown as a [ReadFailure]; a cancellation passes through unchanged. An [ErrorMessage] made from an
- * [ApolloOperationError] fails the way that error would.
+ * [ApolloOperationError] fails the way that error would. A [MemberFacingErrorMessage] fails as OTHER and hands its
+ * text to Swift in [ReadFailure.memberFacingMessage]; the message of any other [ErrorMessage] stays in Kotlin.
  */
 @HiddenFromObjC
-suspend fun <T> iosRead(block: suspend Raise<Any>.() -> T): T = try {
+suspend fun <T> iosReadOrThrow(block: suspend Raise<Any>.() -> T): T = try {
   either { block() }.getOrElse { throw readFailureOf(it) }
 } catch (e: CancellationException) {
   throw e
@@ -58,6 +68,10 @@ private fun readFailureOf(error: Any): ReadFailure = when (error) {
 
   is WrapsApolloOperationError -> {
     readFailureOf(error.apolloOperationError)
+  }
+
+  is MemberFacingErrorMessage -> {
+    ReadFailure(ReadFailureKind.OTHER, memberFacingMessage = error.message)
   }
 
   is ErrorMessage -> {

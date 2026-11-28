@@ -854,12 +854,16 @@ Every feature module except `feature-impersonation` is KMP with its code in `com
 
 ## Reads for the iOS app
 
-The iOS app calls shared Kotlin through `:umbrella`. A feature that serves iOS writes a class of plain
-`@NativeCoroutines suspend fun x() = iosRead { ... }` reads, contributes an `AppScope` component exposing it, adds an
-extension on `IosGraphHolder` that returns it via `component<...>()`, and adds its module to `projectsToExport` in
-`app/umbrella/build.gradle.kts`. A read made before login injects `@PublicApolloClient ApolloClient`. The iOS Apollo
-clients keep no normalized cache, so `watch`, `safeWatch` and `apolloStore` are not available there. The worked example
-is the `IosGraphHolder` KDoc in `:ios-data-bridge`.
+The iOS app calls shared Kotlin through `:umbrella`. A feature that serves iOS writes a `FooService` class of plain
+`@NativeCoroutinesRefined suspend fun x() = iosReadOrThrow { ... }` reads, contributes an `AppScope` component exposing
+it, adds an extension `IosGraphHolder.fooService()` that returns it via `component<...>()`, and adds its module to
+`projectsToExport` in `app/umbrella/build.gradle.kts`. Name the class for what it serves, never `...Reads` or
+`...Client` (the Swift protocol it will conform to is the client). `@NativeCoroutinesRefined` hides the Swift function
+behind a `__` prefix, and Swift builds that name from the selector, so `usage(contractId)` arrives as
+`__usageContractId(_:)`: the iOS app calls it only from the extension that makes the service conform to the feature's
+client protocol. A read made before login injects `@PublicApolloClient ApolloClient`. The iOS Apollo clients keep no
+normalized cache, so `watch`, `safeWatch` and `apolloStore` are not available there. The worked example is the
+`IosGraphHolder` KDoc in `:ios-data-bridge`.
 
 ### Export a module or annotate a type
 

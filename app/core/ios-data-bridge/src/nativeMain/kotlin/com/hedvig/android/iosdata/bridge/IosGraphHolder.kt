@@ -9,27 +9,28 @@ import kotlin.native.HiddenFromObjC
  * The shared Kotlin graph the iOS app holds, built on first use.
  *
  * A feature reaches Swift from its own module, with no change here or in the graph and one line in `:umbrella`. It
- * writes a class of plain suspend functions annotated `@NativeCoroutines` (the module applies the
+ * writes a service class of plain suspend functions annotated `@NativeCoroutinesRefined` (the module applies the
  * `com.rickclephas.kmp.nativecoroutines` plugin), contributes an accessor for it, and adds an extension on this class,
  * which Swift sees as a method:
  *
  * ```
  * @Inject
- * class ForeverReads(private val apolloClient: ApolloClient) {
- *   @NativeCoroutines
- *   suspend fun referrals(): ForeverInfo = iosRead {
+ * class ForeverService(private val apolloClient: ApolloClient) {
+ *   @NativeCoroutinesRefined
+ *   suspend fun referrals(): ForeverInfo = iosReadOrThrow {
  *     apolloClient.query(FullReferralsQuery()).safeExecute().bind().toForeverInfo()
  *   }
  * }
  *
  * @ContributesTo(AppScope::class)
- * interface ForeverReadsComponent { val foreverReads: ForeverReads }
+ * interface ForeverServiceComponent { val foreverService: ForeverService }
  *
- * fun IosGraphHolder.foreverReads(): ForeverReads = component<ForeverReadsComponent>().foreverReads
+ * fun IosGraphHolder.foreverService(): ForeverService = component<ForeverServiceComponent>().foreverService
  * ```
  *
- * The umbrella exports the feature's module, and Swift calls
- * `try await asyncFunction(for: holder.foreverReads().referrals())`. A read made before login injects
+ * The umbrella exports the feature's module. Swift sees the refined function as `__referrals()`, which only the iOS
+ * app's extension making `ForeverService` conform to the feature's client protocol calls. The app registers
+ * `holder.foreverService()` as that client, so feature code sees only the protocol. A read made before login injects
  * `@PublicApolloClient ApolloClient`, which never sends a token.
  *
  * The iOS Apollo clients keep no normalized cache, so `watch`, `safeWatch` and `apolloStore` fail there; a read uses

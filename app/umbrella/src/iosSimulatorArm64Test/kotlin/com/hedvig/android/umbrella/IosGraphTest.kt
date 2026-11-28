@@ -24,7 +24,7 @@ import com.hedvig.android.iosdata.bridge.ReadFailure
 import com.hedvig.android.iosdata.bridge.ReadFailureKind
 import com.hedvig.android.iosdata.bridge.component
 import com.hedvig.android.iosdata.bridge.iosGraphHolder
-import com.hedvig.android.iosdata.bridge.iosRead
+import com.hedvig.android.iosdata.bridge.iosReadOrThrow
 import com.hedvig.android.language.IosLanguageSource
 import com.hedvig.android.language.Language
 import com.hedvig.android.logger.IosLogcatLogger
@@ -66,19 +66,19 @@ import platform.Foundation.runUntilDate
 
 /** A feature's reads, written the way a feature module writes them. */
 @Inject
-class ExampleReads(private val apolloClient: ApolloClient) {
+class ExampleService(private val apolloClient: ApolloClient) {
   @NativeCoroutines
-  suspend fun memberId(): String = iosRead {
+  suspend fun memberId(): String = iosReadOrThrow {
     apolloClient.query(PayingMemberPhoneNumberQuery()).safeExecute().bind().currentMember.id
   }
 }
 
 @ContributesTo(AppScope::class)
-interface ExampleReadsComponent {
-  val exampleReads: ExampleReads
+interface ExampleServiceComponent {
+  val exampleService: ExampleService
 }
 
-fun IosGraphHolder.exampleReads(): ExampleReads = component<ExampleReadsComponent>().exampleReads
+fun IosGraphHolder.exampleService(): ExampleService = component<ExampleServiceComponent>().exampleService
 
 /** [IosGraph]'s contributions, plus the HTTP clients the tests intercept. */
 @DependencyGraph(AppScope::class, excludes = [NativeDataStoreMetroProviders::class])
@@ -158,7 +158,7 @@ class IosGraphTest {
     val graph = testGraph()
     val sent = graph.httpClient.answerWith(MEMBER_JSON)
 
-    val delivered = iosGraphHolder { graph }.exampleReads().memberIdNative().await()
+    val delivered = iosGraphHolder { graph }.exampleService().memberIdNative().await()
 
     assertThat(delivered.value).isEqualTo("member-1")
     val headers = sent.single()
@@ -171,7 +171,7 @@ class IosGraphTest {
     val graph = testGraph()
     graph.httpClient.answerWith(null)
 
-    val delivered = iosGraphHolder { graph }.exampleReads().memberIdNative().await()
+    val delivered = iosGraphHolder { graph }.exampleService().memberIdNative().await()
 
     assertThat(delivered.value).isNull()
     val failure = delivered.error?.userInfo?.get("KotlinException") as? ReadFailure
@@ -183,7 +183,7 @@ class IosGraphTest {
     val graph = testGraph(accessTokenFetcher = noTokenFetcher)
     val sent = graph.httpClient.answerWith(UNAUTHENTICATED_JSON)
 
-    val delivered = iosGraphHolder { graph }.exampleReads().memberIdNative().await()
+    val delivered = iosGraphHolder { graph }.exampleService().memberIdNative().await()
 
     assertThat(sent.single()[HttpHeaders.Authorization]).isNull()
     val failure = delivered.error?.userInfo?.get("KotlinException") as? ReadFailure
@@ -195,7 +195,7 @@ class IosGraphTest {
     val graph = testGraph(accessTokenFetcher = throwingFetcher)
     val sent = graph.httpClient.answerWith(MEMBER_JSON)
 
-    val delivered = iosGraphHolder { graph }.exampleReads().memberIdNative().await()
+    val delivered = iosGraphHolder { graph }.exampleService().memberIdNative().await()
 
     assertThat(sent).isEmpty()
     val failure = delivered.error?.userInfo?.get("KotlinException") as? ReadFailure

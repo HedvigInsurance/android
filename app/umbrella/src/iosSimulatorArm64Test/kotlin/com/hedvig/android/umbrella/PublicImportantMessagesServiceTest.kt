@@ -7,7 +7,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import com.hedvig.android.core.tracking.RumLogger
 import com.hedvig.android.data.importantmessages.ios.PublicImportantMessageSeverity
-import com.hedvig.android.data.importantmessages.ios.publicImportantMessagesReads
+import com.hedvig.android.data.importantmessages.ios.publicImportantMessagesService
 import com.hedvig.android.iosdata.bridge.ReadFailure
 import com.hedvig.android.iosdata.bridge.ReadFailureKind
 import com.hedvig.android.iosdata.bridge.iosGraphHolder
@@ -19,7 +19,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 /** The logged-out important messages read, reached through the holder as the iOS app reaches it. */
-class PublicImportantMessagesReadsTest {
+class PublicImportantMessagesServiceTest {
   @BeforeTest
   fun installLoggers() {
     IosLogcatLogger.install()
@@ -37,7 +37,7 @@ class PublicImportantMessagesReadsTest {
     val graph = testGraph()
     graph.baseHttpClient.answerWith(MESSAGES_JSON)
 
-    val delivered = iosGraphHolder { graph }.publicImportantMessagesReads().messagesNative().await()
+    val delivered = iosGraphHolder { graph }.publicImportantMessagesService().messagesNative().await()
 
     assertThat(
       delivered.value.orEmpty().map { listOf(it.id, it.message, it.severity, it.linkUrl, it.linkButtonText) },
@@ -53,7 +53,7 @@ class PublicImportantMessagesReadsTest {
     val sentPublic = graph.baseHttpClient.answerWith(MESSAGES_JSON)
     val sentAuthenticated = graph.httpClient.answerWith(MESSAGES_JSON)
 
-    iosGraphHolder { graph }.publicImportantMessagesReads().messagesNative().await()
+    iosGraphHolder { graph }.publicImportantMessagesService().messagesNative().await()
 
     assertThat(sentPublic.single()[HttpHeaders.Authorization]).isNull()
     assertThat(sentAuthenticated).isEmpty()
@@ -64,7 +64,7 @@ class PublicImportantMessagesReadsTest {
     val graph = testGraph()
     graph.baseHttpClient.answerWith(null)
 
-    val delivered = iosGraphHolder { graph }.publicImportantMessagesReads().messagesNative().await()
+    val delivered = iosGraphHolder { graph }.publicImportantMessagesService().messagesNative().await()
 
     assertThat(delivered.value).isNull()
     val failure = delivered.error?.userInfo?.get("KotlinException") as? ReadFailure
