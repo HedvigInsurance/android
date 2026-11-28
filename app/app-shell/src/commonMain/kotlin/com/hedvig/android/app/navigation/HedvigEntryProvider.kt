@@ -42,6 +42,7 @@ import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
+import com.hedvig.android.feature.importantmessages.ui.PublicImportantMessages
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -152,6 +153,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     hedvigBuildConstants = hedvigBuildConstants,
     externalNavigator = externalNavigator,
     openUrl = openUrl,
+    openMessageLink = appHost.uriHandler::openUri,
   )
   addHomeEntries(
     backstack = backstack,
@@ -261,6 +263,7 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
   hedvigBuildConstants: HedvigBuildConstants,
   externalNavigator: ExternalNavigator,
   openUrl: (String) -> Unit,
+  openMessageLink: (String) -> Unit,
 ) {
   loginEntries(
     backstack = backstack,
@@ -272,6 +275,12 @@ private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
       scope.launch {
         backstack.setLoggedIn(memberIdService.getMemberId().first())
       }
+    },
+    publicImportantMessages = { reloadKey, modifier ->
+      // The host's own handler, not the deep link matcher, which would stash a matched link until after login. It opens
+      // a web link outside the app, except one on a Hedvig deep link host, which comes back into the app and also
+      // waits for login.
+      PublicImportantMessages(reloadKey = reloadKey, openUrl = openMessageLink, modifier = modifier)
     },
   )
 }
