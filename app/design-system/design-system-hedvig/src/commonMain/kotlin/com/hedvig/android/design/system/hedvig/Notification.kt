@@ -174,6 +174,7 @@ fun HedvigNotificationCard(
                 HedvigButton(
                   enabled = true,
                   onClick = style.onButtonClick,
+                  onClickLabel = style.onButtonClickLabel,
                   buttonStyle = priority.buttonStyle,
                   buttonSize = Small,
                   modifier = Modifier.fillMaxWidth(),
@@ -421,6 +422,8 @@ object NotificationDefaults {
     data class Button(
       val buttonText: String,
       val onButtonClick: () -> Unit,
+      /** What TalkBack says the button does, such as that it opens a link outside the app. */
+      val onButtonClickLabel: String? = null,
     ) : InfoCardStyle()
 
     data class Buttons(

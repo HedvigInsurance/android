@@ -24,6 +24,7 @@ kotlin {
   // for iOS under the convention plugin, so re-exporting one later is a one-line change here.
   val projectsToExport: List<DelegatingProjectDependency> = listOf(
     projects.authlib,
+    projects.dataImportantMessages,
     projects.iosDataBridge,
     projects.loggingPublic,
   )
