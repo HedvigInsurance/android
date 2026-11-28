@@ -36,30 +36,11 @@ internal class CommonHedvigBuildConstants(
   override val buildApiVersion: Int = appBuildConfig.osSdkVersion
   override val platformName: String = appBuildConfig.platformName
   override val userAgent: String
-    get() = makeUserAgent(languageService.getLanguage().toBcp47Format(), appBuildConfig)
+    get() = platformUserAgent(languageService.getLanguage().toBcp47Format(), appBuildConfig)
   override val model: String = "${appBuildConfig.manufacturer} ${appBuildConfig.model}"
 }
 
 internal expect val defaultPlatformName: String
-
-private fun makeUserAgent(languageBCP47: String, appBuildConfig: AppBuildConfig): String = buildString {
-  append(appBuildConfig.applicationId)
-  append(" ")
-  append(appBuildConfig.versionName)
-  append(" ")
-  append("(Android")
-  append(" ")
-  append(appBuildConfig.osReleaseVersion)
-  append("; ")
-  append(appBuildConfig.brand)
-  append(" ")
-  append(appBuildConfig.model)
-  append("; ")
-  append(appBuildConfig.device)
-  append("; ")
-  append(languageBCP47)
-  append(")")
-}
 
 private interface UrlHolder {
   fun urlGraphqlOctopus(flavor: Flavor): String

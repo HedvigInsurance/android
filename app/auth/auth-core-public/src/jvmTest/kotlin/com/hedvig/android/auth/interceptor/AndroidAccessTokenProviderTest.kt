@@ -8,6 +8,7 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.auth.storage.DataStoreAuthTokenStorage
 import com.hedvig.android.auth.test.FakeAuthRepository
 import com.hedvig.android.authlib.AccessToken
 import com.hedvig.android.authlib.AuthTokenResult
@@ -193,7 +194,7 @@ class AndroidAccessTokenProviderTest {
     )
   }
 
-  private fun TestScope.authTokenStorage(clock: Clock) = AuthTokenStorage(
+  private fun TestScope.authTokenStorage(clock: Clock) = DataStoreAuthTokenStorage(
     TestPreferencesDataStore(
       datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
       coroutineScope = backgroundScope,

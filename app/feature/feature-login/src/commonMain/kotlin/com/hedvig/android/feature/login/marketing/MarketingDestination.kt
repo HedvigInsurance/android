@@ -55,7 +55,6 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundVideo
 import com.hedvig.android.language.Language
-import com.hedvig.android.language.label
 import hedvig.resources.MARKETING_GET_HEDVIG
 import hedvig.resources.PROFILE_ABOUT_APP_VERSION
 import hedvig.resources.Res
