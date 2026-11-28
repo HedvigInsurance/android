@@ -18,6 +18,7 @@ import com.hedvig.android.core.tracking.ErrorSource
 import com.hedvig.android.core.tracking.logError
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
@@ -29,13 +30,13 @@ import kotlinx.coroutines.flow.onEach
  */
 internal fun ApolloClient.Builder.addHedvigInterceptors(
   platformInterceptors: List<ApolloInterceptor>,
-  logMemberData: Boolean,
+  networkLogPolicy: NetworkLogPolicy,
 ): ApolloClient.Builder = this
   .apply { platformInterceptors.forEach(::addInterceptor) }
-  .addInterceptor(LoggingInterceptor(logMemberData))
+  .addInterceptor(LoggingInterceptor(networkLogPolicy))
 
 internal class LoggingInterceptor(
-  private val logMemberData: Boolean,
+  private val networkLogPolicy: NetworkLogPolicy,
 ) : ApolloInterceptor {
   override fun <D : Data> intercept(
     request: ApolloRequest<D>,
@@ -44,8 +45,11 @@ internal class LoggingInterceptor(
     logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
       logcat(LogPriority.DEBUG) {
-        val responseData = if (logMemberData) " Response data: ${response.data}" else ""
-        "GraphQL request for ${request.operation.name()} EMISSION.$responseData"
+        if (networkLogPolicy.logsGraphqlData) {
+          "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+        } else {
+          "GraphQL request for ${request.operation.name()} EMISSION."
+        }
       }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
@@ -54,7 +58,12 @@ internal class LoggingInterceptor(
       }
       if (response.exception != null && response.exception !is CacheMissException) {
         logcat(LogPriority.WARN) {
-          "GraphQL exception for ${request.operation.name()}: ${response.exception}"
+          val exception = response.exception!!
+          if (networkLogPolicy.logsGraphqlErrors) {
+            "GraphQL exception for ${request.operation.name()}: $exception"
+          } else {
+            "GraphQL exception for ${request.operation.name()}: ${exception::class.simpleName}"
+          }
         }
       }
     }.onCompletion {
@@ -68,16 +77,23 @@ internal class LoggingInterceptor(
     request: ApolloRequest<D>,
     response: ApolloResponse<D>,
   ) {
-    val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
-    val errorMessage = "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
+    val errorMessage = if (networkLogPolicy.logsGraphqlErrors) {
+      val errorMessagesJoinedToString = errors.joinToString(", ", "[", "]") { it.message }
+      "GraphQL errors for ${request.operation.name()}: $errorMessagesJoinedToString"
+    } else {
+      val errorTypes = errors.map { it.extensions.errorType?.value }
+      "GraphQL errors for ${request.operation.name()}: ${errors.size} (error types $errorTypes)"
+    }
     val errorAttributes = buildMap {
-      if (logMemberData) {
+      if (networkLogPolicy.logsGraphqlData) {
         put("data", response.data)
         put("variables", request.variablesForLog())
       }
-      put("errors", errors)
-      if (response.extensions.isNotEmpty()) {
-        put("extensions", response.extensions.toList().joinToString(", ", "[", "]") { it.toString() })
+      if (networkLogPolicy.logsGraphqlErrors) {
+        put("errors", errors)
+        if (response.extensions.isNotEmpty()) {
+          put("extensions", response.extensions.toList().joinToString(", ", "[", "]") { it.toString() })
+        }
       }
     }
     logcat(LogPriority.ERROR) {
@@ -87,7 +103,7 @@ internal class LoggingInterceptor(
         append(errorAttributes)
         if (data != null) {
           append(" There was data and errors at the same time!")
-          if (logMemberData) {
+          if (networkLogPolicy.logsGraphqlData) {
             append(" Data:$data")
           }
         }

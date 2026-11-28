@@ -372,7 +372,7 @@ the millis with a `LocalDate` API is in `docs/plans/2026-11-06-date-picker-local
 
 ### Logging
 
-All logging in the app goes through a single KMP entrypoint: the `logcat` function in `:logging-public`. **Never call Timber, `android.util.Log`, or `println` directly** — Timber is installed only as a set of trees (Crashlytics, Datadog breadcrumbs, debug `DebugTree`) at startup; `logcat` fans out to them on Android and to `NSLog` on iOS.
+All logging in the app goes through a single KMP entrypoint: the `logcat` function in `:logging-public`. **Never call Timber, `android.util.Log`, or `println` directly** — Timber is installed only as a set of trees (Crashlytics, Datadog breadcrumbs, debug `DebugTree`) at startup; `logcat` fans out to them on Android, and on iOS goes to the sink the iOS app installs with `IosLogcatLogger.install(sink, minimumPriority)` (to `NSLog` until one is installed).
 
 **Setup:** add `implementation(projects.loggingPublic)` to the module's `build.gradle.kts`, then:
 

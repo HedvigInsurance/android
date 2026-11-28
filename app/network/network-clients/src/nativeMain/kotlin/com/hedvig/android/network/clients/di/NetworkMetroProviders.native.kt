@@ -5,6 +5,7 @@ import com.apollographql.cache.normalized.api.NormalizedCacheFactory
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
+import com.hedvig.android.network.clients.NetworkLogPolicy
 import com.hedvig.android.network.clients.NoopExtraKtorClientConfiguration
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -29,7 +30,14 @@ interface NativeNetworkMetroProviders {
     normalizedCacheFactory: NormalizedCacheFactory,
     httpClient: HttpClient,
     hedvigBuildConstants: HedvigBuildConstants,
-  ): ApolloClient = buildHedvigApolloClient(normalizedCacheFactory, httpClient, hedvigBuildConstants, emptyList())
+    networkLogPolicy: NetworkLogPolicy,
+  ): ApolloClient = buildHedvigApolloClient(
+    normalizedCacheFactory,
+    httpClient,
+    hedvigBuildConstants,
+    emptyList(),
+    networkLogPolicy,
+  )
 }
 
 internal actual fun httpClientEngineFactory(): HttpClientEngineFactory<*> = Darwin
