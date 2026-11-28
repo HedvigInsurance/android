@@ -17,6 +17,11 @@ annotation class IoDispatcher
 @Retention(AnnotationRetention.RUNTIME)
 annotation class BaseHttpClient
 
+/** Apollo client that never sends an access token, for requests made before login. */
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PublicApolloClient
+
 /** Ktor engine for the auth client, carrying the app's network observability hooks. */
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)

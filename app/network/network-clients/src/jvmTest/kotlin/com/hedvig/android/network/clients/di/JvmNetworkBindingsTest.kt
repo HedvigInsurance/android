@@ -1,11 +1,24 @@
 package com.hedvig.android.network.clients.di
 
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Adapter
+import com.apollographql.apollo.api.CompiledField
+import com.apollographql.apollo.api.CustomScalarAdapters
+import com.apollographql.apollo.api.Query
+import com.apollographql.apollo.api.json.JsonWriter
+import com.apollographql.cache.normalized.FetchPolicy
+import com.apollographql.cache.normalized.fetchPolicy
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.AuthHttpClientEngine
+import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.common.di.DesktopDataDirectory
+import com.hedvig.android.core.common.di.PublicApolloClient
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.ExtraKtorClientConfiguration
 import com.hedvig.android.network.clients.NetworkLogPolicy
@@ -14,8 +27,16 @@ import com.hedvig.android.network.clients.TlsDiagnostics
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
+import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.okhttp.OkHttpEngine
+import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.plugin
+import io.ktor.client.request.get
+import io.ktor.http.Headers
+import io.ktor.http.HttpStatusCode
 import java.io.File
 import javax.net.ssl.SSLHandshakeException
 import kotlin.io.path.createTempDirectory
@@ -23,8 +44,14 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlinx.coroutines.job
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 
 @DependencyGraph(AppScope::class)
 internal interface NetworkTestGraph {
@@ -32,6 +59,14 @@ internal interface NetworkTestGraph {
   val extraKtorClientConfiguration: ExtraKtorClientConfiguration
   val tlsDiagnostics: TlsDiagnostics
   val networkLogPolicy: NetworkLogPolicy
+  val hedvigBuildConstants: HedvigBuildConstants
+  val applicationScope: ApplicationScope
+
+  @PublicApolloClient
+  val publicApolloClient: ApolloClient
+
+  @BaseHttpClient
+  val baseHttpClient: HttpClient
 
   @AuthHttpClientEngine
   val authHttpClientEngine: HttpClientEngine
@@ -46,11 +81,17 @@ internal interface NetworkTestGraph {
 }
 
 class JvmNetworkBindingsTest {
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
+
   private val dataDirectory: File = createTempDirectory("network-bindings-test").toFile()
   private val graph = createGraphFactory<NetworkTestGraph.Factory>().create(dataDirectory, TestAppBuildConfig)
 
   @AfterTest
   fun tearDown() {
+    // Building the base HTTP client launches the device id's first DataStore write on the application scope. Deleting
+    // the directory under that write fails it, and the uncaught IOException then fails whichever runTest comes next.
+    runBlocking { graph.applicationScope.coroutineContext.job.children.toList().joinAll() }
     dataDirectory.deleteRecursively()
   }
 
@@ -72,8 +113,96 @@ class JvmNetworkBindingsTest {
   }
 
   @Test
+  fun `the public Apollo client sends through the graph's base HTTP client`() = runTest {
+    val sent = mutableListOf<Headers>()
+    graph.baseHttpClient.plugin(HttpSend).intercept { request ->
+      sent += request.headers.build()
+      throw RequestRecorded()
+    }
+
+    val response = graph.publicApolloClient.query(TestQuery).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+
+    assertEquals(REQUEST_RECORDED_MESSAGE, response.exception?.message)
+    assertEquals(1, sent.size)
+    assertNotNull(sent.single()["Accept-Language"])
+  }
+
+  @Test
+  fun `the public Apollo client never fetches a token while the member client does`() = runTest {
+    val fetcher = CountingAccessTokenFetcher()
+    val received = mutableListOf<Headers>()
+    val engine = MockEngine { request ->
+      received += request.headers
+      respond("", HttpStatusCode.InternalServerError)
+    }
+    val baseClient = HttpClient(engine) { install(HttpSend) }
+    val providers = object : NetworkMetroProviders {}
+    val publicClient = object : ApolloClientMetroProviders {}.providePublicApolloClient(
+      baseClient,
+      graph.hedvigBuildConstants,
+      graph.networkLogPolicy,
+    )
+
+    publicClient.query(TestQuery).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+
+    assertEquals(1, received.size)
+    assertNull(received.single()["Authorization"])
+    assertEquals(0, fetcher.calls)
+
+    // Control: the member client over the same base client does fetch the token and send it.
+    providers.provideHttpClient(baseClient, fetcher).get("https://example.com")
+
+    assertEquals(2, received.size)
+    assertEquals("Bearer token", received.last()["Authorization"])
+    assertTrue(fetcher.calls > 0)
+
+    // In the app the member client exists and has been used before the public query runs, so check that order too.
+    val callsAfterMemberClient = fetcher.calls
+    publicClient.query(TestQuery).fetchPolicy(FetchPolicy.NetworkOnly).execute()
+
+    assertEquals(3, received.size)
+    assertNull(received.last()["Authorization"])
+    assertEquals(callsAfterMemberClient, fetcher.calls)
+  }
+
+  @Test
   fun `the TLS diagnostics describe nothing, even for a trust failure`() = runTest {
     assertNull(graph.tlsDiagnostics.describe(SSLHandshakeException("Trust anchor for certification path not found.")))
+  }
+}
+
+private object TestQuery : Query<TestQuery.Data> {
+  object Data : Query.Data
+
+  override fun document(): String = "query Test { __typename }"
+
+  override fun name(): String = "Test"
+
+  override fun id(): String = "Test"
+
+  override fun adapter(): Adapter<Data> = error("The request is aborted before a response exists")
+
+  override fun serializeVariables(
+    writer: JsonWriter,
+    customScalarAdapters: CustomScalarAdapters,
+    withDefaultValues: Boolean,
+  ) {}
+
+  override fun rootField(): CompiledField = error("The request is aborted before the cache is read")
+}
+
+/** Thrown by the test's last-stop interceptor so the request never leaves the machine. */
+private class RequestRecorded : RuntimeException(REQUEST_RECORDED_MESSAGE)
+
+private const val REQUEST_RECORDED_MESSAGE = "Request recorded, not sent"
+
+private class CountingAccessTokenFetcher : AccessTokenFetcher {
+  var calls = 0
+    private set
+
+  override suspend fun fetch(): String? {
+    calls++
+    return "token"
   }
 }
 
